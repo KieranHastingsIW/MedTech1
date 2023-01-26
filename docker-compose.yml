@@ -1,42 +1,40 @@
 version: '3.9'
 services:
-  rldb:
-        image: 'postgres:13.1-alpine'
-        container_name: rldb
-        environment:
-            - POSTGRES_USER=dbusername                                     ### replace the DB-USERNAME with your desired USERNAME
-            - POSTGRES_PASSWORD=dbusername                                ### replace the DB-PASSWORD with your desired PASSWORD
-        volumes:
-          - "./database_schema/init_rls.sql:/tmp/init_rls.sql"
-          - "./database_schema/rldb:/var/lib/postgresql/data"
-        ports:
-          - "5431:5432"
+
   pgadmin:
       container_name: pgadmin4_container
-
-
       image: dpage/pgadmin4
-
       environment:
           - PGADMIN_DEFAULT_EMAIL=pgu@mail.com
           - PGADMIN_DEFAULT_PASSWORD=pgp
       ports:
           - "5050:80"
 
-
-
-
-
   mtdb:
         image: 'postgres:13.1-alpine'
         container_name: mtdb
         environment:
-            - POSTGRES_USER=dbusername                                     ### replace the DB-USERNAME with your desired USERNAME
-            - POSTGRES_PASSWORD=dbusername                                ### replace the DB-PASSWORD with your desired PASSWORD
+            - POSTGRES_USER=dbusername       
+            - POSTGRES_PASSWORD=dbusername                             
         volumes:
-          - "./database_schema/init_mtdb.sql:/tmp/init_mtdb.sql"
-          - "./database_schema/mtdb:/var/lib/postgresql/data"
+          - "./init_mtdb.sql:/docker-entrypoint-initdb.d/init_mtdb.sql"
+          - "./mtdb:/var/lib/postgresql/data"
         ports:
           - "5432:5432"
   
-
+  server:
+        container_name: medtech
+        depends_on:
+            - mtdb
+        build:
+            context: medtechsystem
+            dockerfile: Dockerfile
+        image: medtech
+        environment:
+          - SPRING_DATASOURCE_URL=jdbc:postgresql://mtdb:5432/systemdb     
+          - SPRING_DATASOURCE_USERNAME=dbusername
+          - SPRING_DATASOURCE_PASSWORD=dbusername
+          - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+        ports:
+          - "8080:8080"
+      

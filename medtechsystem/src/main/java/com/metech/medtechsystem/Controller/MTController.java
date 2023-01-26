@@ -33,7 +33,7 @@ public class MTController {
         
         systemService.savePatient(patient);
         systemService.callRecordLocator(patient.getNhi());
-        model.addAttribute("system", patient);
+        model.addAttribute("patient", patient);
         return "SystemReturn";
     }
 
