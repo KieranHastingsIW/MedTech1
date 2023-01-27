@@ -7,7 +7,8 @@ basic med tech microservice that adds info to a database and calls RL API when c
 * Enter in patient information and click submit 
 * A webpage should return with the statement "Patient submitted successfully" and the patients NHI number
 
-* To Test to see if the record has successfully been recorded in the record locator database in Postman import the  rl-test.json file and run the Get request with the NHI number you submitted to the medtech web form.
-* The output should be a 200 OK status and an array of Record Locator objects showing the recordLocatorId systemId, dataType, and the patientId which will be equivilant to the NHI.
+* To Test to see if the record has successfully been recorded in the record locator database in Postman import the `TestRL-MEDTECH.postman_collection.json` file that is stored in this repository and run the Get request with the NHI number you submitted to the medtech web form.
+* The output should be a 200 OK status and an array of Record Locator objects showing the recordLocatorId systemId, dataType, and the patientId which will be equivalent to the NHI.
+
 
 
