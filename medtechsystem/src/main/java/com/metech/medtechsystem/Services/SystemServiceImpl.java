@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.metech.medtechsystem.Repository.PatientRepository;
 import com.metech.medtechsystem.modles.Patient;
 import com.metech.medtechsystem.modles.RecordModel;
-import com.metech.medtechsystem.modles.SystemModel;
+
 
 import lombok.AllArgsConstructor;
 
@@ -40,10 +40,6 @@ public class SystemServiceImpl implements SystemService{
         record.setSystemId(1L);
         HttpURLConnection connection;
         
-        
-
-
-
         URL url;
         BufferedReader reader;
         String line;
@@ -65,8 +61,6 @@ public class SystemServiceImpl implements SystemService{
             try(OutputStream os = connection.getOutputStream()) {
                 os.write(out, 0 , length);
             }
-
-
 
             connection .setConnectTimeout(5000);
             connection.setReadTimeout(5000);
@@ -105,7 +99,7 @@ public class SystemServiceImpl implements SystemService{
     public Optional<Patient> getPatient(Long patientId){
         return patientRepository.findById(patientId);
     }
-    // @Override Method that gets rl from RLAPI through system at med tech, will need to use this ater in other end of project 
+    //  Method that gets rl from RLAPI through system at med tech, will need to use this ater in other end of project 
     public void callRecordLocatorGet(String nhi){
 
       
