@@ -20,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name="patient_table")
+@Table(name="patient_tbl")
 public class Patient {
 
     @Id
@@ -38,7 +38,7 @@ public class Patient {
     @Column(name="EMAIL", nullable = false)
     private String email;
 
-    @Column(name = "HNI", nullable = false)
+    @Column(name = "NHI", nullable = false)
     private String nhi;
 
     @Column(name="GENDER", nullable = false)

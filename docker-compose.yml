@@ -1,15 +1,5 @@
 version: '3.9'
 services:
-
-  pgadmin:
-      container_name: pgadmin4_container
-      image: dpage/pgadmin4
-      environment:
-          - PGADMIN_DEFAULT_EMAIL=pgu@mail.com
-          - PGADMIN_DEFAULT_PASSWORD=pgp
-      ports:
-          - "5050:80"
-
   mtdb:
         image: 'postgres:13.1-alpine'
         container_name: mtdb
@@ -19,9 +9,7 @@ services:
         volumes:
           - "./init_mtdb.sql:/docker-entrypoint-initdb.d/init_mtdb.sql"
           - "./mtdb:/var/lib/postgresql/data"
-        ports:
-          - "5432:5432"
-  
+
   server:
         container_name: medtech
         depends_on:
@@ -37,4 +25,6 @@ services:
           - SPRING_JPA_HIBERNATE_DDL_AUTO=update
         ports:
           - "8080:8080"
-      
+networks:
+  default:
+    name: rl-net

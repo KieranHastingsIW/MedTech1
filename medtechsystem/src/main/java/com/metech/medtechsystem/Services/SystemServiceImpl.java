@@ -1,8 +1,11 @@
 package com.metech.medtechsystem.Services;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -26,30 +29,72 @@ public class SystemServiceImpl implements SystemService{
     private PatientRepository patientRepository;
     
     @Override 
-    public void callRecordLocator(String nhi) throws IOException{
+    public void callRecordLocator(String nhi){
+
         // ## code that calls the Recordlocator API and posts a record to 
         // it with the NHI of the patient created in the system ##
         // ------------------------------------------
-        // RecordModel record = new RecordModel();
-        // record.setNhi(nhi);
-        // record.setDataType(2L);
-        // record.setSystemId(1L);
-        // URL url = new URL("http://localhost:9090/rls/");
-        // URLConnection con = url.openConnection();
-        // HttpURLConnection http = (HttpURLConnection)con;
-        // http.setRequestMethod("POST"); 
-        // http.setDoOutput(true);
-        // ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        // String jsonRecord = ow.writeValueAsString(record);
-        // byte[] out =  jsonRecord.getBytes(StandardCharsets.UTF_8);
-        // int length = out.length;
-        // http.setFixedLengthStreamingMode(length);
-        // http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-        // http.connect();
-        // try(OutputStream os = http.getOutputStream()) {
-        //     os.write(out);
-        // }
-        System.out.println("this is the call that is made when posting to the record locator");
+        RecordModel record = new RecordModel();
+        record.setPatientId(nhi);
+        record.setDataType(2L);
+        record.setSystemId(1L);
+        HttpURLConnection connection;
+        
+        
+
+
+
+        URL url;
+        BufferedReader reader;
+        String line;
+        StringBuffer responseContent = new StringBuffer();
+        try {
+            //Convert record model to json 
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String jsonRecord = ow.writeValueAsString(record);
+            byte[] out =  jsonRecord.getBytes(StandardCharsets.UTF_8);
+            int length = out.length;
+            // SET UP HTTP CONNECTION 
+            url = new URL("http://RecordLoactor:9090/rls");
+            connection = (HttpURLConnection) url.openConnection();
+            connection .setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            connection.setRequestProperty("Accept", "application/json");
+            // connection.setRequestProperty("Content-Length", String.valueOf(length));
+            connection.setDoOutput(true);
+            try(OutputStream os = connection.getOutputStream()) {
+                os.write(out, 0 , length);
+            }
+
+
+
+            connection .setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            int status = connection.getResponseCode();
+            if (status > 299){
+                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                while((line = reader.readLine()) != null) {
+                    responseContent.append(line);
+                }
+                reader.close();
+
+            }else{
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                while((line = reader.readLine()) != null) {
+                    responseContent.append(line);
+                }
+                reader.close();
+            }
+
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        
     
     }
     @Override
@@ -60,5 +105,44 @@ public class SystemServiceImpl implements SystemService{
     public Optional<Patient> getPatient(Long patientId){
         return patientRepository.findById(patientId);
     }
+    // @Override Method that gets rl from RLAPI through system at med tech, will need to use this ater in other end of project 
+    public void callRecordLocatorGet(String nhi){
 
+      
+        HttpURLConnection connection;
+        URL url;
+        BufferedReader reader;
+        String line;
+        StringBuffer responseContent = new StringBuffer();
+        try {
+            url = new URL("http://localhost:9090/rls/" + nhi);
+            connection = (HttpURLConnection) url.openConnection();
+            connection .setRequestMethod("GET");
+            connection .setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            int status = connection.getResponseCode();
+            if (status > 299){
+                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                while((line = reader.readLine()) != null) {
+                    responseContent.append(line);
+                }
+                reader.close();
+
+            }else{
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                while((line = reader.readLine()) != null) {
+                    responseContent.append(line);
+                }
+                reader.close();
+            }
+            
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    
+    }
 }

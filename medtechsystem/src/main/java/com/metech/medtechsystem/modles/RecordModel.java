@@ -25,5 +25,5 @@ public class RecordModel {
     private Long systemId;
     
 
-    private String nhi;
+    private String patientId;
 }
